@@ -7,7 +7,7 @@ import { Label } from "../../components/Label";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateCurrentUser } from 'firebase/auth'
 import { userRole, userStatus } from "../../utils/constans";
 import useFirebaseImage from "../../hooks/useFirebaseImage";
 import { auth, db } from "../../firebase/firebase-config";
@@ -40,6 +40,7 @@ const UserAddNew = () => {
   const handleCreateUser = async (values) => {
     if (!isValid) return;
     try {
+      const originalUser = auth.currentUser
       await createUserWithEmailAndPassword(auth, values.email, values.password)
       await setDoc(doc(db, 'users', auth.currentUser.uid), {
         fullname: values.fullname,
@@ -67,6 +68,7 @@ const UserAddNew = () => {
         birthday: "",
       })
       handleResetUpload();
+      updateCurrentUser(auth, originalUser)
     } catch (error) {
       console.log("🚀 ~ file: UserAddNew.jsx:63 ~ handleCreateUser ~ error:", error)
       toast.error('Can not create new user')
@@ -169,11 +171,6 @@ const UserAddNew = () => {
                 checked={Number(watchRole) === userRole.ADMIN}
                 value={userRole.ADMIN}>
                 Admin
-              </Radio>
-              <Radio name="role" control={control}
-                checked={Number(watchRole) === userRole.MOD}
-                value={userRole.MOD}>
-                Moderator
               </Radio>
               <Radio name="role" control={control}
                 checked={Number(watchRole) === userRole.USER}

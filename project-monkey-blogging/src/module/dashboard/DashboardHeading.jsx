@@ -1,4 +1,6 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
+
 
 const DashboardHeading = ({ title = "", desc = "", children }) => {
   return (
@@ -10,6 +12,12 @@ const DashboardHeading = ({ title = "", desc = "", children }) => {
       {children}
     </div>
   );
+};
+
+
+DashboardHeading.propTypes = {
+  title: PropTypes.string,
+  desc: PropTypes.string,
 };
 
 export default DashboardHeading;

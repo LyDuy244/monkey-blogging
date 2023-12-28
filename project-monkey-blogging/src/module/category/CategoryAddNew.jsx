@@ -5,13 +5,21 @@ import { Field, FieldCheckBoxes } from "../../components/field";
 import { InputField } from "../../components/InputField";
 import { Label } from "../../components/Label";
 import DashboardHeading from "../dashboard/DashboardHeading";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { categoryStatus, userRole } from "../../utils/constans";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase/firebase-config";
 import { toast } from "react-toastify";
 import { useAuthContext } from "../../context/auth-context";
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+import NotFoundPage from "../../pages/NotFoundPage";
+
+const schema = yup
+    .object({
+        name: yup.string().required("Please enter your Category name"),
+    })
 
 const CategoryAddNew = () => {
     const {
@@ -21,16 +29,18 @@ const CategoryAddNew = () => {
         handleSubmit,
         formState: {
             isSubmitting,
-            isValid
+            isValid,
+            errors
         }
     } = useForm({
         mode: "onChange",
         defaultValues: {
             name: '',
             slug: '',
-            status: 1,
+            status: categoryStatus.APPROVED,
             createdAt: new Date(),
-        }
+        },
+        resolver: yupResolver(schema)
     });
 
     const handleAddNewCategory = async (values) => {
@@ -52,16 +62,26 @@ const CategoryAddNew = () => {
             reset({
                 name: '',
                 slug: '',
-                status: 1,
+                status: categoryStatus.APPROVED,
                 createdAt: new Date(),
             });
         }
 
     }
 
+    useEffect(() => {
+        const arrErrors = Object.values(errors)
+        if(arrErrors.length > 0) {
+            toast.error(arrErrors[0].message, {
+                pauseOnHover: false,
+                delay: 0
+            })
+        }
+    }, [errors])
+
     const watchStatus = watch("status");
     const {userInfo} = useAuthContext();
-    if(userInfo.role !== userRole.ADMIN) return;
+    if(userInfo.role !== userRole.ADMIN) return <NotFoundPage></NotFoundPage>
     return (
         <div>
             <DashboardHeading
@@ -76,11 +96,10 @@ const CategoryAddNew = () => {
                             control={control}
                             name="name"
                             placeholder="Enter your category name"
-                            required
                         ></InputField>
                     </Field>
                     <Field>
-                        <Label>Slug</Label>
+                        <Label>Slug (optional)</Label>
                         <InputField
                             control={control}
                             name="slug"

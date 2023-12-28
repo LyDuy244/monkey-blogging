@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const PostImageStyles = styled.div`
     img {
@@ -25,5 +26,15 @@ const PostImage = ({ className = '', url = '', alt = '', to = '' }) => {
         </PostImageStyles>
     );
 };
+
+
+
+PostImage.propTypes = {
+    className: PropTypes.string,
+    url: PropTypes.string,
+    alt: PropTypes.string,
+    to: PropTypes.string
+};
+
 
 export default PostImage;

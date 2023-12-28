@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 const PostMetaStyles = styled.div`
     display: flex;
@@ -32,6 +33,13 @@ const PostMeta = ({ date = 'Mar 23', author = 'Andiez Le', className = '', to=''
             </Link>
         </PostMetaStyles>
     );
+};
+
+PostMeta.propTypes = {
+    date: PropTypes.string,
+    author: PropTypes.string,
+    className: PropTypes.string,
+    to: PropTypes.string,
 };
 
 export default PostMeta;

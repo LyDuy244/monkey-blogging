@@ -51,7 +51,7 @@ const PostFeatureItemStyles = styled.div`
 `;
 const PostFeatureItem = ({ data = {} }) => {
   if (!data || !data.id) return null;
-  console.log("🚀 ~ file: PostFeatureItem.jsx:56 ~ PostFeatureItem ~ data:", data)
+  // console.log("🚀 ~ file: PostFeatureItem.jsx:56 ~ PostFeatureItem ~ data:", data)
   const date = data?.createdAt?.seconds ? new Date(data?.createdAt?.seconds * 1000) : new Date()
   const formatDate = new Date(date).toLocaleDateString('vi-VI');
 

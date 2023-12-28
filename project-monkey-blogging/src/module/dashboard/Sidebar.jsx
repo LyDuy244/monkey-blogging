@@ -1,8 +1,10 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase/firebase-config";
+import { userRole } from "../../utils/constans";
+import { useAuthContext } from "../../context/auth-context";
 
 const SidebarStyles = styled.div`
   width: 300px;
@@ -38,6 +40,7 @@ const SidebarStyles = styled.div`
 `;
 const sidebarLinks = [
   {
+    role: [userRole.USER, userRole.ADMIN],
     title: "Dashboard",
     url: "dashboard",
     icon: (
@@ -58,6 +61,7 @@ const sidebarLinks = [
     ),
   },
   {
+    role: [userRole.USER, userRole.ADMIN],
     title: "Post",
     url: "manage/post",
     icon: (
@@ -78,6 +82,7 @@ const sidebarLinks = [
     ),
   },
   {
+    role: [userRole.ADMIN],
     title: "Category",
     url: "manage/category",
     icon: (
@@ -98,6 +103,7 @@ const sidebarLinks = [
     ),
   },
   {
+    role: [userRole.ADMIN],
     title: "User",
     url: "manage/user",
     icon: (
@@ -118,6 +124,7 @@ const sidebarLinks = [
     ),
   },
   {
+    role: [userRole.USER, userRole.ADMIN],
     title: "Logout",
     url: "",
     icon: (
@@ -136,19 +143,25 @@ const sidebarLinks = [
         />
       </svg>
     ),
-    onClick: () => signOut(auth),
+    onClick: true
   },
 ];
 const Sidebar = () => {
+  const { userInfo } = useAuthContext();
+  const navigate = useNavigate();
+  const sidebarLinksUser = sidebarLinks.filter(item => item.role.includes(userInfo.role))
   return (
     <SidebarStyles className="sidebar">
       <div className="sidebar-logo">
         <img srcSet="/logo.png 2x" alt="" />
         <span>Monkey Blogging</span>
       </div>
-      {sidebarLinks.map((link) => {
+      {sidebarLinksUser.map((link) => {
         if (link.onClick) return (
-          <div onClick={link.onClick} to={link.url} className="menu-item" key={link.title}>
+          <div onClick={async ()=>{
+            await signOut(auth)
+            navigate('/')
+          }} to={link.url} className="menu-item" key={link.title}>
             <span className="menu-icon">{link.icon}</span>
             <span className="menu-text">{link.title}</span>
           </div>

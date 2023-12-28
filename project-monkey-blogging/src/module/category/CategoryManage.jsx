@@ -11,8 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/button";
 import { debounce } from "lodash";
 import { useAuthContext } from "../../context/auth-context";
+import NotFoundPage from "../../pages/NotFoundPage";
 
-const CATEGORY_PER_PAGE = 10
+const CATEGORY_PER_PAGE = 5
 
 const CategoryManage = () => {
 
@@ -21,6 +22,45 @@ const CategoryManage = () => {
   const [filter, setFilter] = useState('')
   const [lastDoc, setLastDoc] = useState('')
   const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+
+    async function fetchData() {
+      const colRef = collection(db, 'category');
+
+      const newRef = filter ?
+        query(
+          colRef,
+          where('name', '>=', filter),
+          where('name', "<=", filter + 'utf8'),
+        )
+        : query(colRef, limit(CATEGORY_PER_PAGE))
+
+      // Query the first page of docs
+      const documentSnapshots = await getDocs(newRef);
+
+      // Get the last visible document
+      const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+
+      setLastDoc(lastVisible)
+
+      onSnapshot(colRef, (snapShot) => {
+        setTotal(snapShot.size)
+      })
+
+      onSnapshot(newRef, (snapShot) => {
+        const results = []
+        snapShot.forEach(doc => {
+          results.push({
+            id: doc.id,
+            ...doc.data()
+          })
+        })
+        setCategoryList(results)
+      })
+    }
+    fetchData()
+  }, [filter])
 
   const handleLoadMoreCategory = async () => {
     const nextRef = query(collection(db, "category"),
@@ -44,47 +84,6 @@ const CategoryManage = () => {
     const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
     setLastDoc(lastVisible)
   }
-
-  useEffect(() => {
-
-    async function fetchData() {
-
-
-      const colRef = collection(db, 'category');
-
-      const newRef = filter ?
-        query(
-          colRef,
-          where('name', '>=', filter),
-          where('name', "<=", filter + 'utf8'),
-        )
-        : query(colRef, limit(CATEGORY_PER_PAGE))
-
-      // Query the first page of docs
-      const documentSnapshots = await getDocs(newRef);
-
-      // Get the last visible document
-      const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-      
-      setLastDoc(lastVisible)
-
-      onSnapshot(colRef, (snapShot) => {
-        setTotal(snapShot.size)
-      })
-
-      onSnapshot(newRef, (snapShot) => {
-        const results = []
-        snapShot.forEach(doc => {
-          results.push({
-            id: doc.id,
-            ...doc.data()
-          })
-        })
-        setCategoryList(results)
-      })
-    }
-    fetchData()
-  }, [filter])
 
   const handleDeleteCategory = async (docId) => {
 
@@ -114,9 +113,9 @@ const CategoryManage = () => {
   }, 500)
 
 
-  const {userInfo} = useAuthContext();
-  if(userInfo.role !== userRole.ADMIN) return;
-  
+  const { userInfo } = useAuthContext();
+  if(userInfo.role !== userRole.ADMIN) return <NotFoundPage></NotFoundPage>
+
   return (
     <div>
       <DashboardHeading

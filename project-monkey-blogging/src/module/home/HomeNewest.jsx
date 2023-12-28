@@ -22,6 +22,12 @@ const HomeNewestStyles = styled.div`
     background-color: #f3edff;
     border-radius: 16px;
   }
+
+  @media screen and (max-width: 767px){
+    .layout{
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
 `;
 
 const HomeNewest = () => {
@@ -33,7 +39,6 @@ const HomeNewest = () => {
       colRef,
       where('status', '==', postStatus.APPROVED),
       where('hot', '==', false),
-      limit(3)
     )
     onSnapshot(q, (snapshot) => {
       let results = []
@@ -50,7 +55,9 @@ const HomeNewest = () => {
 
 
   if (posts.length <= 0) return null;
-  const [first, ...other] = posts
+  const [first, ...other] = posts.slice(0, 4)
+  const postOther = posts.slice(4, 8)
+  console.log(postOther)
 
   return (
     <HomeNewestStyles className="home-block">
@@ -67,10 +74,11 @@ const HomeNewest = () => {
           </div>
         </div>
         <div className="grid-layout grid-layout--primary">
-          <PostItem></PostItem>
-          <PostItem></PostItem>
-          <PostItem></PostItem>
-          <PostItem></PostItem>
+        { postOther.length > 0 &&
+          postOther.map(item => (
+            <PostItem key={item.id} data={item}></PostItem>
+          ))
+        }
         </div>
       </div>
     </HomeNewestStyles>

@@ -28,14 +28,13 @@ const PostAddNew = () => {
     defaultValues: {
       title: "",
       slug: "",
-      status: 2,
+      status: postStatus.PENDING,
       hot: false,
       image: "",
       category: {},
-      categoryId: '',
-      userId: '',
       user: {},
       createdAt: '',
+      content: "",
     },
   });
   const watchStatus = watch("status");
@@ -104,22 +103,19 @@ const PostAddNew = () => {
       await addDoc(colRef, {
         ...cloneValues,
         image,
-        categoryId: cloneValues?.category?.id,
-        userId: cloneValues?.user?.id,
         createdAt: serverTimestamp()
       })
       toast.success("Create new post successfully")
       reset({
         title: "",
         slug: "",
-        status: 2,
+        status: postStatus.PENDING,
         hot: false,
         image: "",
         category: {},
-        categoryId: '',
-        userId: '',
         user: {},
         createdAt: '',
+        content: "",
       })
       setSelectCategory({})
       handleResetUpload()
@@ -127,8 +123,6 @@ const PostAddNew = () => {
       console.log(error)
     }
   }
-  
-  if(userInfo.role !== userRole.ADMIN) return;
 
   return (
     <PostAddNewStyles>
@@ -174,41 +168,46 @@ const PostAddNew = () => {
               )
             }
           </Field>
-          <Field>
-            <Label>Status</Label>
-            <div className="flex items-center gap-x-5">
-              <Radio
-                name="status"
-                control={control}
-                checked={Number(watchStatus) === postStatus.APPROVED}
-                value={postStatus.APPROVED}
-              >
-                Approved
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={Number(watchStatus) === postStatus.PENDING}
-                value={postStatus.PENDING}
-              >
-                Pending
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={Number(watchStatus) === postStatus.REJECTED}
-                value={postStatus.REJECTED}
-              >
-                Reject
-              </Radio>
-            </div>
-          </Field>
-          <Field>
-            <Label>Features posts</Label>
-            <Toggle on={watchHot === true} onClick={() => setValue('hot', !watchHot)}></Toggle>
-          </Field>
+          {
+            userInfo?.role === userRole.ADMIN &&
+            <>
+              <Field>
+                <Label>Status</Label>
+                <div className="flex items-center gap-x-5">
+                  <Radio
+                    name="status"
+                    control={control}
+                    checked={Number(watchStatus) === postStatus.APPROVED}
+                    value={postStatus.APPROVED}
+                  >
+                    Approved
+                  </Radio>
+                  <Radio
+                    name="status"
+                    control={control}
+                    checked={Number(watchStatus) === postStatus.PENDING}
+                    value={postStatus.PENDING}
+                  >
+                    Pending
+                  </Radio>
+                  <Radio
+                    name="status"
+                    control={control}
+                    checked={Number(watchStatus) === postStatus.REJECTED}
+                    value={postStatus.REJECTED}
+                  >
+                    Reject
+                  </Radio>
+                </div>
+              </Field>
+              <Field>
+                <Label>Features posts</Label>
+                <Toggle on={watchHot === true} onClick={() => setValue('hot', !watchHot)}></Toggle>
+              </Field>
+            </>
+          }
         </div>
-            
+
         <Button type="submit" kind='primary' className="mx-auto min-w-[250px]" isLoading={isSubmitting} disabled={isSubmitting}>
           Add new post
         </Button>

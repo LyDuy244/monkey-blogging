@@ -6,6 +6,7 @@ const TableStyles = styled.div`
   border-radius: 10px;
   table {
     width: 100%;
+    overflow-x: auto;
   }
   thead {
     background-color: #f7f7f8;

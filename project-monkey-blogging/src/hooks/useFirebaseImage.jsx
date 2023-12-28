@@ -51,7 +51,16 @@ export default function useFirebaseImage(setValue, getValues, imageName = null, 
         handleUpdateImage(file)
     }
 
+    const handleResetUpload = () => {
+        setImage('');
+        setProgress(0);
+    }
     const handleDeleteImage = () => {
+        if(imageName === 'user.png' || getValues("image_name") === 'user.png'){
+            handleResetUpload();
+            return;
+        }
+
         const storage = getStorage();
 
         const desertRef = ref(storage, 'image/' + (imageName || getValues('image_name')));
@@ -59,8 +68,7 @@ export default function useFirebaseImage(setValue, getValues, imageName = null, 
         deleteObject(desertRef).then(() => {
 
             console.log('Remove image successfully')
-            setImage('')
-            setProgress(0)
+            handleResetUpload();
 
             cb && cb()
 
@@ -69,10 +77,6 @@ export default function useFirebaseImage(setValue, getValues, imageName = null, 
         });
     }
 
-    const handleResetUpload = () => {
-        setImage('');
-        setProgress(0);
-    }
 
     return {
         handleSelectImage,

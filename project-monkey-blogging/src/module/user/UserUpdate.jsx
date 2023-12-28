@@ -37,7 +37,8 @@ const UserUpdate = () => {
     const userId = param.get('id')
     function getBirthDay(date) {
         if (!date) return;
-        return `${date.getFullYear()}-${date.getMonth() + 1 > 9 ? date.getMonth() + 1 : '0' + date.getMonth() + 1}-${date.getDate() > 9 ? date.getDate() : '0' + date.getDate()}`
+        const month = date.getMonth() + 1;
+        return `${date.getFullYear()}-${month > 9 ? month  : '0' + month}-${date.getDate() > 9 ? date.getDate() : '0' + date.getDate()}`
     }
     const handleUpdateUser = async (values) => {
         if (!isValid) return;
@@ -173,11 +174,6 @@ const UserUpdate = () => {
                                 checked={Number(watchRole) === userRole.ADMIN}
                                 value={userRole.ADMIN}>
                                 Admin
-                            </Radio>
-                            <Radio name="role" control={control}
-                                checked={Number(watchRole) === userRole.MOD}
-                                value={userRole.MOD}>
-                                Moderator
                             </Radio>
                             <Radio name="role" control={control}
                                 checked={Number(watchRole) === userRole.USER}

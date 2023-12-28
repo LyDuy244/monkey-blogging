@@ -6,7 +6,6 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 const authContext = createContext()
 
 const AuthProvider = (props) => {
-
     const [userInfo, setUserInfo] = useState({})
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {

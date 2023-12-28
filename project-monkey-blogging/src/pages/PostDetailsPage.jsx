@@ -132,24 +132,24 @@ const PostDetailsPage = () => {
         <div className="container">
           <div className="post-header">
             <PostImage
-              url={postInfo.image}
+              url={postInfo?.image}
               className="min-w-[600px] max-w-[600px] rounded-lg"
             ></PostImage>
             <div className="post-info">
-              <PostCategory className="mb-6" to={postInfo.category?.slug}>{postInfo?.category?.name}</PostCategory>
+              <PostCategory className="mb-6" to={postInfo?.category?.slug}>{postInfo?.category?.name}</PostCategory>
               <h1 className="post-heading">
-                {postInfo.title}
+                {postInfo?.title}
               </h1>
-              <PostMeta  to={slugify(postInfo?.user?.fullname || '', { lower: true })} author={postInfo.user.username} date={new Date(postInfo.createdAt.seconds * 1000).toLocaleDateString('vi-VI')}></PostMeta>
+              <PostMeta  to={slugify(postInfo?.user?.fullname || '', { lower: true })} author={postInfo?.user?.username} date={new Date(postInfo?.createdAt?.seconds * 1000).toLocaleDateString('vi-VI')}></PostMeta>
             </div>
           </div>
           <div className="post-content">
             <div className="entry-content">
-              {parse(postInfo.content) || ''}
+            {parse(postInfo?.content) || ''}
             </div>
-            <AuthorBox userId={postInfo.user?.id}></AuthorBox>
+            <AuthorBox userId={postInfo?.user?.id}></AuthorBox>
           </div>
-          <PostRelated categoryId={postInfo.categoryId}></PostRelated>
+          <PostRelated categoryId={postInfo?.category?.id}></PostRelated>
         </div>
       </Layout>
     </PostDetailsPageStyles>

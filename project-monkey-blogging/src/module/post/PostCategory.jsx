@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
@@ -13,16 +14,12 @@ const PostCategoryStyles = styled.div`
 
     a{
         display: block;
-    }
+    };
     
-    ${(props) => props.type === 'primary' && css`
-        background-color: ${props => props.theme.grayF3};
-    `};
+    ${(props) => props.type === 'primary' && css`background-color: ${props => props.theme.grayF3};`};
 
-    ${(props) => props.type === 'secondary' && css`
-        background-color: white;
-    `};
-    
+    ${(props) => props.type === 'secondary' && css`background-color: white;`};
+   
 `;
 
 const PostCategory = ({ children, type = 'primary', className = '', to = '' }) => {
@@ -33,6 +30,13 @@ const PostCategory = ({ children, type = 'primary', className = '', to = '' }) =
             </Link>
         </PostCategoryStyles>
     );
+};
+
+
+PostCategory.propTypes = {
+    type: PropTypes.string,
+    className: PropTypes.string,
+    to: PropTypes.string,
 };
 
 export default PostCategory;

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Button } from '../../components/button';
 
 const HomeBannerStyles = styled.div`
-min-height: 520px;
+  min-height: 520px;
   padding: 40px 0;
   background-image: linear-gradient(
     to right bottom,
@@ -53,22 +53,22 @@ min-height: 520px;
 `
 
 const HomeBanner = () => {
-    return (
-        <HomeBannerStyles>
-            <div className="container">
-                <div className="banner">
-                    <div className="banner-content">
-                        <h1 className="banner-heading">Monkey Blogging</h1>
-                        <p className="banner-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum obcaecati voluptatem blanditiis quisquam laboriosam odit ipsum, inventore, reiciendis praesentium corrupti, nostrum consequuntur incidunt nulla expedita consequatur labore non! Error, nihil.</p>
-                        <Button to='sign-up'>Get started</Button>
-                    </div>
-                    <div className="banner-image">
-                        <img src="/banner.png" alt="banner" />
-                    </div>
-                </div>
-            </div>
-        </HomeBannerStyles>
-    );
+  return (
+    <HomeBannerStyles>
+      <div className="container">
+        <div className="banner">
+          <div className="banner-content">
+            <h1 className="banner-heading">Monkey Blogging</h1>
+            <p className="banner-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum obcaecati voluptatem blanditiis quisquam laboriosam odit ipsum, inventore, reiciendis praesentium corrupti, nostrum consequuntur incidunt nulla expedita consequatur labore non! Error, nihil.</p>
+            <Button to='sign-up'>Get started</Button>
+          </div>
+          <div className="banner-image">
+            <img src="/banner.png" alt="banner" />
+          </div>
+        </div>
+      </div>
+    </HomeBannerStyles>
+  );
 };
 
 export default HomeBanner;

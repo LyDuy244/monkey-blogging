@@ -20,7 +20,14 @@ const menuLink = [
 ]
 
 const HeaderStyles = styled.header`
-    padding: 40px 0;
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    z-index: 1000;
+    border-bottom: 1px solid #ccc;
    .header-main{
         display: flex;
         align-items: center;
@@ -80,6 +87,7 @@ const Header = () => {
 
     const { userInfo } = useAuthContext();
 
+    console.log(userInfo)
     return (
         <HeaderStyles>
             <div className="container">

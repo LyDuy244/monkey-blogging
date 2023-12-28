@@ -27,7 +27,7 @@ const UserProfile = () => {
     const image_name = imageRegex?.length > 0 ? imageRegex[1] : ''
     const deleteAvatar = async () => {
         const colRef = doc(db, 'users', userInfo.id);
-        await updateDoc(colRef, { avatar: '' })
+        await updateDoc(colRef, { avatar: '' , image_name: ""})
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,7 +42,13 @@ const UserProfile = () => {
     useEffect(() => {
         if (!userInfo) return;
         reset({
-            ...userInfo,
+            fullname: userInfo.fullname,
+            username: userInfo.username,
+            phone: userInfo.phone,
+            description: userInfo.description,
+            password: userInfo.password,
+            avatar: userInfo.avatar,
+            email: userInfo.email,
             birthday: getBirthDay(new Date(userInfo.birthday?.seconds * 1000))
         })
     }, [reset, userInfo])
@@ -53,17 +59,12 @@ const UserProfile = () => {
 
 
     const handleUpdateProfile = async (values) => {
-        console.log("🚀 ~ file: UserProfile.jsx:46 ~ handleUpdateProfile ~ values:", values.birthday)
         if (!isValid) return;
         try {
             const colRef = doc(db, 'users', userInfo.id);
             await updateDoc(colRef, {
-                fullname: values.fullname,
-                username: values.username,
+                ...values,
                 birthday: new Date(values.birthday),
-                phone: values.phone,
-                description: values.description,
-                password: values.password,
                 avatar: image
             })
             toast.success("Update use information successfully")
@@ -150,15 +151,7 @@ const UserProfile = () => {
                             placeholder="Enter your password"
                         ></PasswordField>
                     </Field>
-                    <Field>
-                        <Label>Confirm Password</Label>
-                        <PasswordField
-                            control={control}
-                            name="confirmPassword"
-                            type="password"
-                            placeholder="Enter your confirm password"
-                        ></PasswordField>
-                    </Field>
+                    
                 </div>
                 <Button type='submit' isLoading={isSubmitting} disabled={isSubmitting} kind="primary" className="mx-auto w-[200px]">
                     Update

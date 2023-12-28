@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { postStatus, userRole } from "../../utils/constans";
 import { LabelStatus } from "../../components/Label";
 import { useAuthContext } from "../../context/auth-context";
+import NotFoundPage from "../../pages/NotFoundPage";
 
 const POSTS_PER_PAGE = 10
 
@@ -22,18 +23,23 @@ const PostManage = () => {
   const [lastDoc, setLastDoc] = useState('')
   const [total, setTotal] = useState(0)
   const navigate = useNavigate();
+  const { userInfo } = useAuthContext();
 
   useEffect(() => {
     async function fetchData() {
       const colRef = collection(db, 'posts');
-      const newRef = filter ? query(colRef, where("title", ">=", filter), where('title', '<=', filter + 'utf8')) : query(colRef, limit(POSTS_PER_PAGE))
+      const colUserRef = query(colRef, where('user.id', '==', userInfo?.id));
+
+      const userRef = filter ? query(colRef, where("title", ">=", filter), where('title', '<=', filter + 'utf8'), where('user.id', '==', userInfo?.id)) : query(colRef, limit(POSTS_PER_PAGE), where('user.id', '==', userInfo?.id))
+      const adminRef = filter ? query(colRef, where("title", ">=", filter), where('title', '<=', filter + 'utf8'),) : query(colRef, limit(POSTS_PER_PAGE))
+
+      const newRef = userInfo.role === userRole.ADMIN ? adminRef : userRef
 
       const documentSnapshots = await getDocs(newRef);
       const lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
-      setLastDoc(lastVisible);
 
-      onSnapshot(colRef, (snapShot) => {
+      onSnapshot(userInfo?.role === userRole.ADMIN ? colRef : colUserRef, (snapShot) => {
         setTotal(snapShot.size)
       })
 
@@ -48,12 +54,12 @@ const PostManage = () => {
         setPostList(results)
       })
 
-      setLastDoc(newRef);
+      setLastDoc(lastVisible);
     }
 
     fetchData()
 
-  }, [filter])
+  }, [filter, userInfo?.id, userInfo.role])
 
   const handleLoadMorePosts = async () => {
     const nextRef = query(collection(db, 'posts'), startAfter(lastDoc), limit(POSTS_PER_PAGE))
@@ -110,20 +116,18 @@ const PostManage = () => {
         return <LabelStatus type="warning">Pending</LabelStatus>
       case postStatus.REJECTED:
         return <LabelStatus type="error">Rejected</LabelStatus>
-    
+
       default:
         break;
     }
-    
-  }
-  const {userInfo} = useAuthContext();
-  if(userInfo.role !== userRole.ADMIN) return;
 
+  }
+
+  if (!userInfo) return <NotFoundPage></NotFoundPage>
   return (
     <div>
-        
-      <DashboardHeading title="Manage post" desc="Manage posts user">
 
+      <DashboardHeading title="Manage post" desc="Manage posts user">
       </DashboardHeading>
       <div className="mb-10 flex justify-end">
         <div className="w-full max-w-[300px]">
@@ -159,8 +163,8 @@ const PostManage = () => {
                       className="w-[66px] h-[55px] rounded object-cover"
                     />
                     <div className="flex-1  max-w-[250px] whitespace-pre-wrap">
-                      <h3 className="font-semibold">{post.title}</h3>
-                      <time className="text-sm text-gray-500">
+                      <h3 className="font-semibold hidden lg:block">{post.title}</h3>
+                      <time className="text-sm text-gray-500 hidden lg:block">
                         Date: {new Date(post.createdAt.seconds * 1000).toLocaleDateString("vi-VI")}
                       </time>
                     </div>

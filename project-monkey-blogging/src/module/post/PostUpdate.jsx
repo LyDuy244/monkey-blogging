@@ -20,14 +20,19 @@ import { toast } from "react-toastify";
 import ImageUploader from "quill-image-uploader";
 import axios from "axios";
 import { useAuthContext } from "../../context/auth-context";
+import NotFoundPage from "../../pages/NotFoundPage";
 Quill.register('modules/imageUploader', ImageUploader);
   
 const PostUpdate = () => {
   const [params] = useSearchParams();
   const postId = params.get('id');
+  const [postItem, setPostItem] = useState({})
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState('');
   const [content, setContent] = useState('');
+  const {userInfo} = useAuthContext();
+  console.log("🚀 ~ file: PostUpdate.jsx:32 ~ PostUpdate ~ userInfo:", userInfo)
+
   const { handleSubmit, control, reset, setValue, getValues, watch, formState: { isSubmitting, isValid } } = useForm({
     mode: 'onChange',
   })
@@ -69,11 +74,26 @@ const PostUpdate = () => {
       reset({
         ...singleDoc.data()
       })
+      setPostItem(singleDoc.data())
       setSelectCategory(singleDoc.data()?.category || '')
       setContent(singleDoc.data()?.content || '')
     }
     getCategoriesData()
   }, [postId, reset])
+
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!userInfo.id) return;
+      const colRef = doc(db, 'users', userInfo?.id)
+      const docRef = await getDoc(colRef)
+      setValue('user', {
+        id: docRef.id,
+        ...docRef.data()
+      })
+    }
+    fetchUserData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo.id])
 
 
   const handleClickOption = async (category) => {
@@ -84,7 +104,7 @@ const PostUpdate = () => {
       id: singleDoc.id,
       ...singleDoc.data()
     })
-    setValue("categoryId", singleDoc.id)
+
     setSelectCategory(category)
   }
 
@@ -129,9 +149,9 @@ const PostUpdate = () => {
     }
   }), []);
 
-  const {userInfo} = useAuthContext();
-  if(userInfo.role !== userRole.ADMIN) return;
   if (!postId) return;
+  if(!userInfo || (userInfo?.id !== postItem?.user?.id && userInfo?.role !== userRole.ADMIN)) return <></>
+
 
   return <div>
     <DashboardHeading title="Update post" desc="Update post content"></DashboardHeading>
@@ -176,39 +196,44 @@ const PostUpdate = () => {
             )
           }
         </Field>
-        <Field>
-          <Label>Status</Label>
-          <div className="flex items-center gap-x-5">
-            <Radio
-              name="status"
-              control={control}
-              checked={Number(watchStatus) === postStatus.APPROVED}
-              value={postStatus.APPROVED}
-            >
-              Approved
-            </Radio>
-            <Radio
-              name="status"
-              control={control}
-              checked={Number(watchStatus) === postStatus.PENDING}
-              value={postStatus.PENDING}
-            >
-              Pending
-            </Radio>
-            <Radio
-              name="status"
-              control={control}
-              checked={Number(watchStatus) === postStatus.REJECTED}
-              value={postStatus.REJECTED}
-            >
-              Reject
-            </Radio>
-          </div>
-        </Field>
-        <Field>
-          <Label>Features posts</Label>
-          <Toggle on={watchHot === true} onClick={() => setValue('hot', !watchHot)}></Toggle>
-        </Field>
+        {
+            userInfo?.role === userRole.ADMIN &&
+            <>
+              <Field>
+                <Label>Status</Label>
+                <div className="flex items-center gap-x-5">
+                  <Radio
+                    name="status"
+                    control={control}
+                    checked={Number(watchStatus) === postStatus.APPROVED}
+                    value={postStatus.APPROVED}
+                  >
+                    Approved
+                  </Radio>
+                  <Radio
+                    name="status"
+                    control={control}
+                    checked={Number(watchStatus) === postStatus.PENDING}
+                    value={postStatus.PENDING}
+                  >
+                    Pending
+                  </Radio>
+                  <Radio
+                    name="status"
+                    control={control}
+                    checked={Number(watchStatus) === postStatus.REJECTED}
+                    value={postStatus.REJECTED}
+                  >
+                    Reject
+                  </Radio>
+                </div>
+              </Field>
+              <Field>
+                <Label>Features posts</Label>
+                <Toggle on={watchHot === true} onClick={() => setValue('hot', !watchHot)}></Toggle>
+              </Field>
+            </>
+          }
       </div>
       <div className="grid grid-cols-1 gap-x-10 mb-10">
         <Field>

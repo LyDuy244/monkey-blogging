@@ -53,8 +53,12 @@ const SignupPage = () => {
             password: values.password,
             username: slugify(values.fullname, { lower: true }),
             avatar: 'https://firebasestorage.googleapis.com/v0/b/monkey-blogging-1cd99.appspot.com/o/image%2Fuser.png?alt=media&token=84692ce5-5259-4176-a74c-2829286e10c6',
+            image_name: "user.png",
             status: userStatus.ACTIVE,
             role: userRole.USER,
+            description: "",
+            phone: "",
+            birthday: new Date(),
             createdAt: serverTimestamp()
         })
 

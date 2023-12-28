@@ -25,7 +25,7 @@ const DashboardStyles = styled.div`
     }
   }
 `;
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = () => {
   const { userInfo } = useAuthContext();
   if (!userInfo) return <NotFoundPage></NotFoundPage>
   return (
